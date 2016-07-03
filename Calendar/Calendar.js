@@ -18,7 +18,8 @@ import WeekRow from "./WeekRow.js";
 export default class Calendar extends Component {
 	static propTypes = {
 		month: PropTypes.number,
-		year: PropTypes.number
+		year: PropTypes.number,
+		onDayClick: PropTypes.func
 	};
 
 	static defaultProps = {
@@ -54,7 +55,7 @@ export default class Calendar extends Component {
 				<WeekRow 
 					key = {`WeekRow${index}`} 
 					weekModel = {weekModel} 
-					dayCellClick = {this.props.click}
+					onDayClick = {this.props.onDayClick}
 				/>
 			);
 		});

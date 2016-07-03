@@ -6,14 +6,16 @@ import React, {
 import {
 	View,
 	Text,
-	TouchableWithoutFeedback
+	TouchableWithoutFeedback,
+	StyleSheet
 } from 'react-native';
 
 import ProperDate from './CalendarGenerator/ProperDate';
 
 export default class DayCell extends Component {
 	static propTypes = {
-		dayModel: PropTypes.object
+		dayModel: PropTypes.object,
+		onDayClick: PropTypes.func,
 	};
 
 	static defaultProps = {
@@ -30,6 +32,10 @@ export default class DayCell extends Component {
 		};
 	}
 
+	onClick () {
+		this.props.onDayClick && this.props.onDayClick(this.props.dayModel);
+	}
+
 	render() {
 		let {
 			type,
@@ -38,19 +44,26 @@ export default class DayCell extends Component {
 		let className = this.DAY_TYPE_CLASSNAME[type];
 
 		return (
-			<TouchableWithoutFeedback>
-				<View style = {{
-					padding: 8,
-					backgroundColor: 'white',
-					alignItems: 'center',
-					justifyContent: 'center',
-					flex: 1
-				}}>
-					<Text style = {{
-						color: 'blue'
-					}}>{date.day}</Text>
+			<TouchableWithoutFeedback
+				onPress = {this.onClick.bind(this)}
+			>
+				<View style = {styles.cellWrapper}>
+					<Text style = {styles.cell}>{date.day}</Text>
 				</View>
 			</TouchableWithoutFeedback>
 		);
 	}
 };
+
+let styles = StyleSheet.create({
+	cellWrapper: {
+		padding: 8,
+		backgroundColor: 'white',
+		alignItems: 'center',
+		justifyContent: 'center',
+		flex: 1
+	},
+	cell: {
+		color: 'blue'
+	}
+});

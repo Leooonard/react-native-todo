@@ -18,7 +18,8 @@ import {
 import {
    saveTodo,
    removeTodo,
-   getAllTodo
+   getAllTodo,
+   clearAllTodo
 } from './TodoStorage.js';
 
 import {
@@ -45,7 +46,8 @@ class TODO extends Component {
       this.state = {
          input: "",
          todos: dataSource.cloneWithRows([]),
-         showDropdownMenu: false
+         showDropdownMenu: false,
+         chosenDate: null
       };
 
       this.dropdownLeft = 0;
@@ -69,14 +71,20 @@ class TODO extends Component {
    }
 
    submitChange () {
-      let {input} = this.state;
+      let {input, chosenDate} = this.state;
 
-      saveTodo(input)
+      let todoObj = {
+         input,
+         date: chosenDate,
+      };
+
+      saveTodo(todoObj)
       .then((todo) => {
          this.todos.push(todo);
 
          this.setState({
             input: '',
+            chosenDate: '',
             todos: this.state.todos.cloneWithRows(this.todos)
          });
       });
@@ -99,7 +107,7 @@ class TODO extends Component {
       });
    }
 
-   onCalendarClick () {
+   onCalendarButtonClick () {
       this.calendarButton.measure((x, y, width, height, pageX, pageY) => {
          this.dropdownLeft = pageX + width / 2;
          this.dropdownTop = pageY + height;
@@ -108,6 +116,15 @@ class TODO extends Component {
             showDropdownMenu: true,
          });
       })
+   }
+
+   onCalendarClick (day) {
+      if (day.type === "normal") {
+         this.setState({
+            showDropdownMenu: false,
+            chosenDate: `${day.date.year} / ${day.date.month} / ${day.date.day}`
+         });
+      }
    }
 
    showDropdownMenu () {
@@ -124,7 +141,11 @@ class TODO extends Component {
                   backgroundColor: 'transparent',
                   flexDirection: 'column'
                }}>   
-                  <Calendar month = {7} year = {2016}/>
+                  <Calendar 
+                     month = {7} 
+                     year = {2016}
+                     onDayClick = {this.onCalendarClick.bind(this)}
+                  />
                </View>
             </DropdownMenu>
          );
@@ -150,7 +171,6 @@ class TODO extends Component {
                <View style = {{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  marginBottom: 20,
                }}>
                   <TextInput
                      style = {styles.input}
@@ -167,7 +187,7 @@ class TODO extends Component {
                         marginLeft: 10,
                         borderWidth: 0
                      }}
-                     click = {this.onCalendarClick.bind(this)}
+                     click = {this.onCalendarButtonClick.bind(this)}
                   >
                      <Image 
                         ref = {ref => this.calendarButton = ref}
@@ -179,6 +199,11 @@ class TODO extends Component {
                         source = {require('./images/calendar.png')}
                      />
                   </Button>
+               </View>
+               <View style = {{
+                  marginBottom: 20,
+               }}>
+                  <Text>{this.state.chosenDate}</Text>
                </View>
                <Button normalStyle = {{flex: -1}} click = {this.submitChange.bind(this)}>
                   {"确认"}

@@ -6,14 +6,14 @@ function makeUniqueHash () {
 	return Date.now().toString();
 }
 
-function saveTodo (todoContent) {
+function saveTodo (todoObj) {
 	let uniqueHash = makeUniqueHash();
 
-	return AsyncStorage.setItem(uniqueHash, todoContent)
+	return AsyncStorage.setItem(uniqueHash, JSON.stringify(todoObj))
 							.then(() => {
 								return {
 									key: uniqueHash,
-									content: todoContent
+									todoObj
 								}
 							});
 }
@@ -22,24 +22,29 @@ function removeTodo (key) {
 	return AsyncStorage.removeItem(key);
 }
 
+function clearAllTodo () {
+	return AsyncStorage.clear();
+}
+
 function getAllTodo () {
 	return AsyncStorage.getAllKeys()
 				.then(keys => AsyncStorage.multiGet(keys))
 				.then(todos => todos.map(todo => {
 					return {
 						key: todo[0],
-						content: todo[1]
+						todoObj: JSON.parse(todo[1])
 					};
 				}))
 				.catch(e => console.error(e));
 }
 
 function getTodo (key) {
-	return AsyncStorage.getItem(key);
+	return AsyncStorage.getItem(key).then(todoObj => JSON.parse(todoObj));
 }
 
 export {
 	saveTodo,
 	removeTodo,
-	getAllTodo
+	getAllTodo,
+	clearAllTodo
 };

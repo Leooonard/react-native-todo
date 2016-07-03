@@ -15,7 +15,7 @@ let {width: windowWidth, height: windowHeight} = Dimensions.get('window');
 const TRIANGLE_WIDTH = 12;
 const ERROR_NUM = -1;
 
-const BORDER_MARGIN = 3;
+const BORDER_MARGIN = 0;
 
 export default class DropdownMenu extends Component {
 	constructor (props) {

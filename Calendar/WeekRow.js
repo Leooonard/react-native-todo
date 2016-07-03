@@ -11,7 +11,8 @@ import DayCell from './DayCell';
 
 export default class WeekRow extends Component {
 	static propTypes = {
-		weekModel: PropTypes.array
+		weekModel: PropTypes.array,
+		onDayClick: PropTypes.func,
 	};
 
 	static defaultProps = {
@@ -29,7 +30,7 @@ export default class WeekRow extends Component {
 			return <DayCell 
 						key = {`DayCell${index}`} 
 						dayModel = {day} 
-						dayCellClick = {this.props.dayCellClick}
+						onDayClick = {this.props.onDayClick}
 					/>
 		});
 	}

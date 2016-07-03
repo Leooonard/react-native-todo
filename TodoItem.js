@@ -27,14 +27,17 @@ export default class TodoItem extends Component {
 		return (
 			<View style = {styles.todoWrapper}>
 	         <Text style = {styles.todoContent}>
-	            {this.props.todo.content}
+	            {this.props.todo.todoObj.input}
+	         </Text>
+	         <Text>
+	         	{this.props.todo.todoObj.date}
 	         </Text>
 	         <Button 
 	         	click = {() => this.props.onDelete(this.props.todo.key)} 
 	         	normalStyle = {{
-	         		flex: 1,
 	         		padding: 3,
 	         		height: 30,
+	         		flex: 0
 	         	}}
 	         >
 	         	{"删除"}
@@ -46,7 +49,6 @@ export default class TodoItem extends Component {
 
 let styles = StyleSheet.create({
 	todoWrapper: {
-		flex: 1,
 		flexDirection: 'row',
 		backgroundColor: '#b2b2b2',
       borderRadius: 4,
@@ -55,7 +57,7 @@ let styles = StyleSheet.create({
       alignItems: 'center',
 	},
 	todoContent: {
-		flex: 5,
+		flex: 1,
       color: 'white',
       fontSize: 16,
 	},
