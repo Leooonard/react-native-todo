@@ -8,21 +8,58 @@ import {
    Text,
    View,
    TextInput,
-   AsyncStorage
+   StatusBar,
+   AsyncStorage,
+   ListView,
+   Dimensions,
+   Image
 } from 'react-native';
 
 import {
+   saveTodo,
+   removeTodo,
+   getAllTodo
+} from './TodoStorage.js';
+
+import {
    Button
-} from 'doly'
+} from 'doly';
+
+import TodoItem from './TodoItem.js';
+
+import DropdownMenu from './DropdownMenu.js';
+
+import Calendar from './Calendar/Calendar.js';
+
+let {width: windowWidth, height: windowHeight} = Dimensions.get("window");
 
 class TODO extends Component {
    constructor (props) {
       super(props);
 
+      let dataSource = new ListView.DataSource({
+         rowHasChanged: (r1, r2) => r1 !== r2
+      });
+
+      this.todos = [];
       this.state = {
          input: "",
-         messageList: []
+         todos: dataSource.cloneWithRows([]),
+         showDropdownMenu: false
       };
+
+      this.dropdownLeft = 0;
+      this.dropdownTop = 0;
+   }
+
+   componentDidMount () {
+      getAllTodo()
+      .then((todos) => {
+         this.todos = [...todos];
+         this.setState({
+            todos: this.state.todos.cloneWithRows(this.todos)
+         });
+      });
    }
 
    inputChanage (text) {
@@ -32,57 +69,129 @@ class TODO extends Component {
    }
 
    submitChange () {
-      let {input, messageList} = this.state;
-      messageList.push(input);
+      let {input} = this.state;
 
-      this.setState({
-         input: "",
-         messageList
+      saveTodo(input)
+      .then((todo) => {
+         this.todos.push(todo);
+
+         this.setState({
+            input: '',
+            todos: this.state.todos.cloneWithRows(this.todos)
+         });
       });
    }
 
-   renderMessageList () {
-      return this.state.messageList.map((message, index) => {
-         return (
-            <Text
-               style = {{
-                  backgroundColor: '#b2b2b2',
-                  color: 'white',
-                  borderRadius: 4,
-                  padding: 8,
-                  fontSize: 16,
-                  marginTop: 8
-               }}
-               key = {index}
-            >
-               {message}
-            </Text>
-         );
+   deleteTodo (key) {
+      removeTodo(key)
+      .then(() => {
+         let newTodos = [];
+         this.todos.forEach((todo) => {
+            if (todo.key !== key) {
+               newTodos.push(todo);
+            }
+         });
+
+         this.todos = newTodos;
+         this.setState({
+            todos: this.state.todos.cloneWithRows(this.todos)
+         });
+      });
+   }
+
+   onCalendarClick () {
+      this.calendarButton.measure((x, y, width, height, pageX, pageY) => {
+         this.dropdownLeft = pageX + width / 2;
+         this.dropdownTop = pageY + height;
+
+         this.setState({
+            showDropdownMenu: true,
+         });
       })
+   }
+
+   showDropdownMenu () {
+      var Menu = null;
+      if (this.state.showDropdownMenu) {
+         Menu = (
+            <DropdownMenu 
+               left = {this.dropdownLeft} 
+               top = {this.dropdownTop} 
+               onClose = {this.closeDropdownMenu.bind(this)}
+            >
+               <View style = {{
+                  width: windowWidth,
+                  backgroundColor: 'transparent',
+                  flexDirection: 'column'
+               }}>   
+                  <Calendar month = {7} year = {2016}/>
+               </View>
+            </DropdownMenu>
+         );
+      }
+
+      return Menu
+   }
+
+   closeDropdownMenu () {
+      this.setState({
+         showDropdownMenu: false
+      });
    }
 
    render() {
       return (
-         <View style={{
-            padding: 20
-         }}>
-            <TextInput
-               style = {{
-                  height: 40,
-                  borderWidth: 1,
-                  borderColor: 'gray',
-                  padding: 10,
-                  borderRadius: 5,
-                  marginBottom: 20
-               }}
-               value = {this.state.input}
-               onChangeText = {this.inputChanage.bind(this)}
-            />
-            <Button click = {this.submitChange.bind(this)}>
-               {"确认"}
-            </Button>
-            <View>
-               {this.renderMessageList()}
+         <View>
+            <StatusBar/>
+            <View style={{
+               padding: 5,
+               paddingTop: 20,
+            }}>
+               <View style = {{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  marginBottom: 20,
+               }}>
+                  <TextInput
+                     style = {styles.input}
+                     placeholder = {"准备干点什么？"}
+                     value = {this.state.input}
+                     onChangeText = {this.inputChanage.bind(this)}
+                  />
+                  <Button
+                     normalStyle = {{
+                        flex: -1,
+                        width: 30,
+                        height: 30,
+                        marginRight: 10,
+                        marginLeft: 10,
+                        borderWidth: 0
+                     }}
+                     click = {this.onCalendarClick.bind(this)}
+                  >
+                     <Image 
+                        ref = {ref => this.calendarButton = ref}
+                        style = {{
+                           width: 30,
+                           height: 30,
+                        }}
+                        resizeMode = {"stretch"}
+                        source = {require('./images/calendar.png')}
+                     />
+                  </Button>
+               </View>
+               <Button normalStyle = {{flex: -1}} click = {this.submitChange.bind(this)}>
+                  {"确认"}
+               </Button>
+               <ListView
+                  dataSource = {this.state.todos}
+                  renderRow = {todo => <TodoItem 
+                                          todo = {todo} 
+                                          onDelete = {this.deleteTodo.bind(this)}
+                                       />
+                              }
+               />
+               {this.showDropdownMenu()}
             </View>
          </View>
       );
@@ -90,12 +199,14 @@ class TODO extends Component {
 }
 
 const styles = StyleSheet.create({
-   container: {
+   input: {
+      height: 40,
+      borderWidth: 1,
+      borderColor: 'gray',
+      padding: 6,
+      borderRadius: 5,
       flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      backgroundColor: '#F5FCFF',
-   },
+   }
 });
 
 AppRegistry.registerComponent('TODO', () => TODO);
