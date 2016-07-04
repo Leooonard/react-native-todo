@@ -5,6 +5,7 @@ import React, {
 import {
    AppRegistry,
    StyleSheet,
+   TouchableWithoutFeedback,
    Text,
    View,
    TextInput,
@@ -31,6 +32,8 @@ import TodoItem from './TodoItem.js';
 import DropdownMenu from './DropdownMenu.js';
 
 import Calendar from './Calendar/Calendar.js';
+
+import Checkbox from './Checkbox.js';
 
 let {width: windowWidth, height: windowHeight} = Dimensions.get("window");
 
@@ -168,6 +171,7 @@ class TODO extends Component {
                padding: 5,
                paddingTop: 20,
             }}>
+               <Checkbox/>
                <View style = {{
                   flexDirection: 'row',
                   alignItems: 'center',
