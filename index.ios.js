@@ -35,6 +35,8 @@ import Calendar from './Calendar/Calendar.js';
 
 import Checkbox from './Checkbox.js';
 
+import Ratiobox from './Ratiobox.js';
+
 let {width: windowWidth, height: windowHeight} = Dimensions.get("window");
 
 class TODO extends Component {
@@ -172,6 +174,7 @@ class TODO extends Component {
                paddingTop: 20,
             }}>
                <Checkbox/>
+               <Ratiobox/>
                <View style = {{
                   flexDirection: 'row',
                   alignItems: 'center',
