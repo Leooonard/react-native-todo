@@ -25,5 +25,6 @@ import {
 } from './TodoStorage.js';
 
 import TODO from './todo.index.js';
+import TODONavigator from './todo.navigator.js';
 
-AppRegistry.registerComponent('TODO', () => TODO);
+AppRegistry.registerComponent('TODO', () => TODONavigator);

@@ -42,9 +42,20 @@ function getTodo (key) {
 	return AsyncStorage.getItem(key).then(todoObj => JSON.parse(todoObj));
 }
 
+function getLatestTodo () {
+	return getAllTodo().then(todos => {
+		if (Array.isArray(todos) && todos.length > 0) {
+			return todos[0];
+		} else {
+			return null;
+		}
+	})
+}
+
 export {
 	saveTodo,
 	removeTodo,
 	getAllTodo,
-	clearAllTodo
+	clearAllTodo,
+	getLatestTodo
 };

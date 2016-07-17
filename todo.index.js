@@ -20,7 +20,8 @@ import {
    saveTodo,
    removeTodo,
    getAllTodo,
-   clearAllTodo
+   clearAllTodo,
+   getLatestTodo
 } from './TodoStorage.js';
 
 import {
@@ -37,22 +38,18 @@ import Checkbox from './Checkbox.js';
 
 import Ratiobox from './Ratiobox.js';
 
-let {width: windowWidth, height: windowHeight} = Dimensions.get("window");
+let {width: windowWidth} = Dimensions.get("window");
 
 export default class extends Component {
    constructor (props) {
       super(props);
 
-      let dataSource = new ListView.DataSource({
-         rowHasChanged: (r1, r2) => r1 !== r2
-      });
-
-      this.todos = [];
       this.state = {
          input: "",
-         todos: dataSource.cloneWithRows([]),
+         content: "",
          showDropdownMenu: false,
-         chosenDate: null
+         chosenDate: null,
+         latestTodo: null,
       };
 
       this.dropdownLeft = 0;
@@ -60,11 +57,9 @@ export default class extends Component {
    }
 
    componentDidMount () {
-      getAllTodo()
-      .then((todos) => {
-         this.todos = [...todos];
+      getLatestTodo().then(latestTodo => {
          this.setState({
-            todos: this.state.todos.cloneWithRows(this.todos)
+            latestTodo
          });
       });
    }
@@ -72,6 +67,12 @@ export default class extends Component {
    inputChanage (text) {
       this.setState({
          input: text
+      });
+   }
+
+   contentChange (content) {
+      this.setState({
+         content
       });
    }
 
@@ -84,7 +85,7 @@ export default class extends Component {
    }
 
    submitChange () {
-      let {input, chosenDate} = this.state;
+      let {input, chosenDate, content} = this.state;
 
       if (!this.todoValidate(input, chosenDate)) {
          alert('请输入内容并选择deadline.');
@@ -93,34 +94,17 @@ export default class extends Component {
 
       let todoObj = {
          input,
+         content,
          date: chosenDate,
       };
 
       saveTodo(todoObj)
       .then((todo) => {
-         this.todos.push(todo);
-
          this.setState({
             input: '',
             chosenDate: '',
-            todos: this.state.todos.cloneWithRows(this.todos)
-         });
-      });
-   }
-
-   deleteTodo (key) {
-      removeTodo(key)
-      .then(() => {
-         let newTodos = [];
-         this.todos.forEach((todo) => {
-            if (todo.key !== key) {
-               newTodos.push(todo);
-            }
-         });
-
-         this.todos = newTodos;
-         this.setState({
-            todos: this.state.todos.cloneWithRows(this.todos)
+            content: '',
+            latestTodo: null
          });
       });
    }
@@ -179,8 +163,14 @@ export default class extends Component {
    }
 
    showLatestTodoItem () {
-      if (this.todos.length > 0) {
-         return <TodoItem todo = {this.todos[0]}/>
+      if (this.state.latestTodo) {
+         return (
+            <View style = {{
+            }}>
+               <Text>最近的待办事项:</Text>
+               <TodoItem todo = {this.state.latestTodo}/>
+            </View>
+         );
       } else {
          return null;
       }
@@ -188,11 +178,11 @@ export default class extends Component {
 
    render() {
       return (
-         <View>
+         <View style = {{flex: 1}}>
             <StatusBar/>
             <View style={{
-               padding: 5,
-               paddingTop: 20,
+               backgroundColor: '#e8e8e8',
+               flex: 1
             }}>
                <View style = {styles.inputWrapper}>
                   <TextInput
@@ -231,11 +221,14 @@ export default class extends Component {
                      multiline = {true}
                      placeholder = {"备注"}
                      style = {styles.contentInput}
+                     value = {this.state.content}
+                     onChangeText = {this.contentChange.bind(this)}
                   />
                </View>
-               <Button normalStyle = {{flex: -1, marginTop: 20}} click = {this.submitChange.bind(this)}>
+               <Button normalStyle = {styles.submitButton} click = {this.submitChange.bind(this)}>
                   {"确认"}
                </Button>
+               <View style = {{flex: 1, backgroundColor: 'transparent'}}></View>
                {this.showLatestTodoItem()}
                {this.showDropdownMenu()}
             </View>
@@ -251,6 +244,7 @@ const styles = StyleSheet.create({
       borderTopWidth: 1,
       borderTopColor: '#cacaca',
       padding: 8,
+      backgroundColor: 'white'
    },
    input: {
       height: 24,
@@ -266,26 +260,36 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       borderBottomWidth: 1,
       borderBottomColor: '#cacaca',
-      padding: 8
+      padding: 8,
+      backgroundColor: 'white'
    },
    calendarButton: {
       flex: -1,
       width: 25,
       height: 25,
-      borderWidth: 0
+      borderWidth: 0,
    },
    calendarImage: {
       width: 25,
       height: 25,
    },
    contentWrapper: {
+      borderTopWidth: 1,
+      borderTopColor: '#cacaca',
       borderBottomWidth: 1,
       borderBottomColor: '#cacaca',
       padding: 8,
+      backgroundColor: 'white',
+      marginTop: 20
    },
    contentInput: {
       height: 72,
       flex: 1,
       fontSize: 14
+   },
+   submitButton: {
+      flex: -1,
+      margin: 10,
+      marginTop: 20
    }
 });

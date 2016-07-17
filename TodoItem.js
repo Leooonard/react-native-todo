@@ -6,7 +6,8 @@ import React, {
 import {
 	View,
 	Text,
-	StyleSheet
+	StyleSheet,
+	TouchableWithoutFeedback
 } from 'react-native';
 
 import {
@@ -16,7 +17,8 @@ import {
 export default class TodoItem extends Component {
 	static propTypes = {
 		todo: PropTypes.object.isRequired,
-		onDelete: PropTypes.func
+		onDelete: PropTypes.func,
+		onPress: PropTypes.func
 	};
 
 	constructor (props) {
@@ -25,43 +27,59 @@ export default class TodoItem extends Component {
 
 	render () {
 		return (
-			<View style = {styles.todoWrapper}>
-	         <Text style = {styles.todoContent}>
-	            {this.props.todo.todoObj.input}
-	         </Text>
-	         <Text>
-	         	{this.props.todo.todoObj.date}
-	         </Text>
-	         <Button 
-	         	click = {() => this.props.onDelete(this.props.todo.key)} 
-	         	normalStyle = {{
-	         		padding: 3,
-	         		height: 30,
-	         		flex: 0
-	         	}}
-	         >
-	         	{"删除"}
-	         </Button>
-			</View>
+			<TouchableWithoutFeedback onPress = {() => {
+				if (typeof this.props.onPress === 'function') {
+					this.props.onPress(this.props.todo.key);
+				}
+			}}>
+				<View style = {styles.todoWrapper}>
+					<View style = {styles.titleWrapper}>
+						<Text style = {styles.todoTitle}>
+			            {this.props.todo.todoObj.input}
+			         </Text>
+			         <Text style = {styles.deadline}>
+			         	{'Deadline: ' + this.props.todo.todoObj.date}
+			         </Text>
+					</View>
+		         <View style = {styles.contentWrapper}>
+		         	<Text style = {styles.content}>
+		         		{this.props.todo.todoObj.content}
+		         	</Text>
+		         </View>
+				</View>
+			</TouchableWithoutFeedback>
       );
 	}
 }
 
 let styles = StyleSheet.create({
 	todoWrapper: {
-		flexDirection: 'row',
-		backgroundColor: '#b2b2b2',
-      borderRadius: 4,
+		backgroundColor: 'white',
+		borderColor: '#cacaca',
+		borderWidth: 1,
+      borderRadius: 6,
       padding: 8,
-      marginTop: 8,
-      alignItems: 'center',
+      margin: 10,
+      marginTop: 5,
+      marginBottom: 5
 	},
-	todoContent: {
-		flex: 1,
-      color: 'white',
-      fontSize: 16,
+	titleWrapper: {
+		borderBottomWidth: 1,
+		borderBottomColor: "#cacaca",
 	},
-	deleteButton: {
-		width: 50
+	todoTitle: {
+      fontSize: 18,
+      marginBottom: 5,
+      fontWeight: 'bold'
+	},
+	deadline: {
+		fontSize: 12,
+		marginBottom: 5,
+	},
+	contentWrapper: {
+		padding: 5
+	},
+	content: {
+		fontSize: 14
 	}
 });
