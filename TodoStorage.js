@@ -55,6 +55,7 @@ function getLatestTodo () {
 export {
 	saveTodo,
 	removeTodo,
+	getTodo,
 	getAllTodo,
 	clearAllTodo,
 	getLatestTodo

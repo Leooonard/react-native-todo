@@ -20,6 +20,7 @@ const NAVBAR_HEIGHT = 50;
 const routes = [
 	{
 		title: '新的记录',
+		name: 'main',
 		index: 0,
 		leftButton: false,
 		rightButton: true,
@@ -27,9 +28,10 @@ const routes = [
 		rightButtonPress: (route, navigator, index, navState) => {
 			navigator.push(routes[1]);
 		},
-		content: <TODO/>
+		content: TODO
 	}, {
 		title: '记录列表',
+		name: 'todoList',
 		index: 1,
 		leftButton: true,
 		leftButtonText: '新的记录',
@@ -37,9 +39,10 @@ const routes = [
 			navigator.pop();
 		},
 		rightButton: false,
-		content: <TodoList/>
+		content: TodoList
 	}, {
 		title: '记录',
+		name: 'todoDetail',
 		index: 2,
 		leftButton: true,
 		leftButtonText: '记录列表',
@@ -47,9 +50,41 @@ const routes = [
 			navigator.pop();
 		},
 		rightButton: false,
-		content: <TodoDetail/>
+		content: TodoDetail
 	}
 ];
+
+class BizNavigator {
+	constructor (rnNavigator) {
+		this.rnNavigator = rnNavigator;
+	}
+
+	push (routeName, param) {
+		let targetRouteItem = this.findRoute(routeName, routes);
+		if (targetRouteItem) {
+			let targetRouteItemCopy = {
+				...targetRouteItem,
+				param: {
+					...param
+				}
+			};
+			this.rnNavigator.push(targetRouteItemCopy);
+		}
+	}
+
+	findRoute (routeName, routeList) {
+		for (let i = 0, n = routeList.length ; i < n ; i++) {
+			let routeItem = routeList[i];
+			let {name} = routeItem;
+
+			if (routeName === name) {
+				return routeItem;
+			}
+		}
+
+		return undefined;
+	}
+}
 
 export default class TodoNavigator extends Component {
 	constructor (props) {
@@ -57,9 +92,14 @@ export default class TodoNavigator extends Component {
 	}
 
 	renderView (route, navigator) {
+		let Content = route.content;
+
 		return (
 			<View style = {styles.scene}>
-				{route.content}
+				<Content 
+					navigator = {new BizNavigator(navigator)}
+					param = {route.param}
+				/>
 			</View>
 		);
 	}
@@ -68,7 +108,6 @@ export default class TodoNavigator extends Component {
 		return ( 
 			<Navigator 
 				initialRoute = {routes[0]}
-				initialRouteStack = {routes}
 				renderScene = {
 					(route, navigator) => {
 						return this.renderView(route, navigator)

@@ -16,6 +16,10 @@ import {
 import TodoItem from './TodoItem.js';
 
 export default class TodoList extends Component {
+	static propTypes = {
+		navigator: PropTypes.object
+	};
+
 	constructor (props) {
 		super(props);
 
@@ -37,7 +41,9 @@ export default class TodoList extends Component {
 	}
 
 	jumpToTodo (todoKey) {
-		
+		this.props.navigator.push('todoDetail', {
+			key: todoKey
+		});
 	}
 
 	render () {
@@ -46,7 +52,7 @@ export default class TodoList extends Component {
 				dataSource = {this.state.dataSource}
 				renderRow = {todo => {
 					return (
-						<TodoItem todo = {todo} onPress = {jumpToTodo}/>
+						<TodoItem todo = {todo} onPress = {this.jumpToTodo.bind(this)}/>
 					);
 				}}
 			/>

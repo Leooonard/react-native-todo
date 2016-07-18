@@ -7,7 +7,7 @@ import {
 	View,
 	Text,
 	StyleSheet,
-	TouchableWithoutFeedback
+	TouchableHighlight
 } from 'react-native';
 
 import {
@@ -27,7 +27,7 @@ export default class TodoItem extends Component {
 
 	render () {
 		return (
-			<TouchableWithoutFeedback onPress = {() => {
+			<TouchableHighlight onPress = {() => {
 				if (typeof this.props.onPress === 'function') {
 					this.props.onPress(this.props.todo.key);
 				}
@@ -47,7 +47,7 @@ export default class TodoItem extends Component {
 		         	</Text>
 		         </View>
 				</View>
-			</TouchableWithoutFeedback>
+			</TouchableHighlight>
       );
 	}
 }
