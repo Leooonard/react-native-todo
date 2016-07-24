@@ -6,7 +6,7 @@ import React, {
 import {
 	View,
 	Text,
-	TouchableWithoutFeedback,
+	TouchableOpacity,
 	StyleSheet
 } from 'react-native';
 
@@ -26,9 +26,9 @@ export default class DayCell extends Component {
 		super();
 
 		this.DAY_TYPE_CLASSNAME = {
-			[ProperDate.Types.empty]: 'emptyDate',
-			[ProperDate.Types.normal]: 'normalDate',
-			[ProperDate.Types.today]: 'todayDate'
+			[ProperDate.Types.empty]: 'empty',
+			[ProperDate.Types.normal]: 'cell',
+			[ProperDate.Types.today]: 'today'
 		};
 	}
 
@@ -36,21 +36,27 @@ export default class DayCell extends Component {
 		this.props.onDayClick && this.props.onDayClick(this.props.dayModel);
 	}
 
+	getStyle (type) {
+		return {
+			wrapper: this.DAY_TYPE_CLASSNAME[type] + 'Wrapper',
+			cell: this.DAY_TYPE_CLASSNAME[type] + 'Cell'
+		};
+	}
+
 	render() {
 		let {
 			type,
 			date
 		} = this.props.dayModel;
-		let className = this.DAY_TYPE_CLASSNAME[type];
+		let {wrapper: wrapperStyle, cell: cellStyle} = this.getStyle(type);
 
 		return (
-			<TouchableWithoutFeedback
+			<TouchableOpacity
 				onPress = {this.onClick.bind(this)}
+				style = {styles[wrapperStyle]}
 			>
-				<View style = {styles.cellWrapper}>
-					<Text style = {styles.cell}>{date.day}</Text>
-				</View>
-			</TouchableWithoutFeedback>
+				<Text style = {styles[cellStyle]}>{date.day}</Text>
+			</TouchableOpacity>
 		);
 	}
 };
@@ -63,7 +69,29 @@ let styles = StyleSheet.create({
 		justifyContent: 'center',
 		flex: 1
 	},
-	cell: {
+	cellCell: {
 		color: 'blue'
+	},
+	todayWrapper: {
+		padding: 8,
+		backgroundColor: 'white',
+		alignItems: 'center',
+		justifyContent: 'center',
+		flex: 1
+	},
+	todayCell: {
+		color: 'red',
+		fontSize: 16,
+		fontWeight: 'bold'
+	},
+	emptyWrapper: {
+		padding: 8,
+		backgroundColor: 'gray',
+		alignItems: 'center',
+		justifyContent: 'center',
+		flex: 1
+	},
+	emptyCell: {
+		color: 'white'
 	}
 });

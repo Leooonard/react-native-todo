@@ -17,6 +17,7 @@ import TodoDetail from './TodoDetail.js';
 
 const MAX_SCENE_INDEX = 1;
 const NAVBAR_HEIGHT = 50;
+const STATUSBAR_HEIGHT = 20;
 const routes = [
 	{
 		title: '新的记录',
@@ -25,9 +26,9 @@ const routes = [
 		leftButton: false,
 		rightButton: true,
 		rightButtonText: '记录列表',
-		rightButtonPress: (route, navigator, index, navState) => {
+		rightButtonPress: ((route, navigator, index, navState) => {
 			navigator.push(routes[1]);
-		},
+		}),
 		content: TODO
 	}, {
 		title: '记录列表',
@@ -38,7 +39,11 @@ const routes = [
 		leftButtonPress: (route, navigator, index, navState) => {
 			navigator.pop();
 		},
-		rightButton: false,
+		rightButton: true,
+		rightButtonText: '编辑',
+		rightButtonPress: ((route, navigator, index, navState) => {
+			
+		}),
 		content: TodoList
 	}, {
 		title: '记录',
@@ -70,6 +75,26 @@ class BizNavigator {
 			};
 			this.rnNavigator.push(targetRouteItemCopy);
 		}
+	}
+
+	pop () {
+		this.rnNavigator.pop();
+	}
+
+	fresh (param) {
+		let currentRoute = this.getCurrentRoute();
+		let currentRouteCopy = {
+			...currentRoute,
+			param: {
+				...param
+			}
+		};
+		this.rnNavigator.replace(currentRouteCopy);
+	}
+
+	getCurrentRoute () {
+		let currentRoutesStack = this.rnNavigator.getCurrentRoutes();
+		return currentRoutesStack[currentRoutesStack.length - 1];
 	}
 
 	findRoute (routeName, routeList) {
@@ -113,50 +138,6 @@ export default class TodoNavigator extends Component {
 						return this.renderView(route, navigator)
 					}
 				}
-				navigationBar = {
-			     	<Navigator.NavigationBar
-			       	routeMapper={{
-			         	LeftButton: (route, navigator, index, navState) =>{
-			         		if (route.leftButton) {
-			         			return (
-				         			<TouchableHighlight
-				         				onPress = {() => {
-				         					route.leftButtonPress(route, navigator, index, navState);
-				         				}}
-				         			>
-				         				<Text style = {styles.button}>
-				         					{route.leftButtonText}
-				         				</Text>
-				         			</TouchableHighlight>
-				         		); 
-			         		} else {
-			         			return null;
-			         		}
-			         	},
-			         	RightButton: (route, navigator, index, navState) =>{ 
-			         		if (route.rightButton) {
-			         			return (
-			         				<TouchableHighlight
-			         					onPress = {() => {
-			         						route.rightButtonPress(route, navigator, index, navState);
-			         					}}
-			         				>
-			         					<Text style = {styles.button}>
-			         						{route.rightButtonText}
-			         					</Text>
-			         				</TouchableHighlight>
-			         			);
-			         		}
-			         	},
-			         	Title: (route, navigator, index, navState) =>{ 
-			         		return (
-			         			<Text style = {styles.title}>{route.title}</Text>
-			         		); 
-			         	}
-			       	}}
-			       	style={styles.navbar}
-			     	/>
-			  	}
 			/>
 		);
 	}
@@ -164,7 +145,7 @@ export default class TodoNavigator extends Component {
 
 let styles = StyleSheet.create({
 	scene: {
-		marginTop: NAVBAR_HEIGHT,
+		paddingTop: STATUSBAR_HEIGHT,
 		flex: 1,
 		backgroundColor: 'white'
 	},

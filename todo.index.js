@@ -6,6 +6,7 @@ import {
    AppRegistry,
    StyleSheet,
    TouchableWithoutFeedback,
+   TouchableHighlight,
    Text,
    View,
    TextInput,
@@ -37,6 +38,8 @@ import Calendar from './Calendar/Calendar.js';
 import Checkbox from './Checkbox.js';
 
 import Ratiobox from './Ratiobox.js';
+
+import HeaderView from './HeaderView.js';
 
 let {width: windowWidth} = Dimensions.get("window");
 
@@ -179,7 +182,10 @@ export default class extends Component {
    render() {
       return (
          <View style = {{flex: 1}}>
-            <StatusBar/>
+            <HeaderView
+               rightText = {'列表'}
+               titleText = {'新的记录'}
+            />
             <View style={{
                backgroundColor: '#e8e8e8',
                flex: 1

@@ -6,7 +6,7 @@ import React, {
 import {
 	View,
 	Text,
-	TouchableWithoutFeedback,
+	TouchableOpacity,
 	StyleSheet
 } from 'react-native';
 
@@ -26,23 +26,17 @@ export default class MonthOperationBar extends Component {
 	render() {
 		return (
 			<View style = {styles.monthOperationBar}>
-				<TouchableWithoutFeedback>
-					<View style = {styles.monthChangeBtn}>
-						<Text style = {styles.btnText}>上月</Text>
-					</View>
-				</TouchableWithoutFeedback>
-				<TouchableWithoutFeedback>
-					<View style = {styles.yearTitle}>
-						<Text style = {styles.btnText}>
-							{`${this.props.year}年${this.props.month}月`}
-						</Text>
-					</View>
-				</TouchableWithoutFeedback>
-				<TouchableWithoutFeedback>
-					<View style = {styles.monthChangeBtn}>
-						<Text style = {styles.btnText}>下月</Text>
-					</View>
-				</TouchableWithoutFeedback>
+				<TouchableOpacity style = {styles.monthChangeBtn} onPress = {this.props.gotoLastMonth}>
+					<Text style = {styles.btnText}>上月</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style = {styles.yearTitle} onPress = {this.props.gotoYearView}>
+					<Text style = {styles.btnText}>
+						{`${this.props.year}年${this.props.month}月`}
+					</Text>
+				</TouchableOpacity>
+				<TouchableOpacity style = {styles.monthChangeBtn} onPress = {this.props.gotoNextMonth}>
+					<Text style = {styles.btnText}>下月</Text>
+				</TouchableOpacity>
 			</View>
 		);
 	}

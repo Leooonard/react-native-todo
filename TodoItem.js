@@ -17,8 +17,8 @@ import {
 export default class TodoItem extends Component {
 	static propTypes = {
 		todo: PropTypes.object.isRequired,
-		onDelete: PropTypes.func,
-		onPress: PropTypes.func
+		onPress: PropTypes.func,
+		onLongPress: PropTypes.func
 	};
 
 	constructor (props) {
@@ -27,11 +27,22 @@ export default class TodoItem extends Component {
 
 	render () {
 		return (
-			<TouchableHighlight onPress = {() => {
-				if (typeof this.props.onPress === 'function') {
-					this.props.onPress(this.props.todo.key);
+			<TouchableHighlight 
+				onPress = {
+					() => {
+						if (typeof this.props.onPress === 'function') {
+							this.props.onPress(this.props.todo.key);
+						}
+					}
 				}
-			}}>
+				onLongPress = {
+					() => {
+						if (typeof this.props.onLongPress === 'function') {
+							this.props.onLongPress(this.props.todo.key);
+						}
+					}
+				}
+			>
 				<View style = {styles.todoWrapper}>
 					<View style = {styles.titleWrapper}>
 						<Text style = {styles.todoTitle}>
