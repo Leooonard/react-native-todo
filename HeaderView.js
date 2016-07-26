@@ -95,7 +95,6 @@ let styles = StyleSheet.create({
 		color: 'white'
 	},
 	titleWrapper: {
-		flex: 1,
 		padding: 10,
 		alignItems: 'center',
 		position: 'absolute',
