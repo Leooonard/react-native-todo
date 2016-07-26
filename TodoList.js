@@ -8,7 +8,9 @@ import {
 	View,
 	Text,
 	ListView,
-	Modal
+	Modal,
+	LayoutAnimation,
+	TouchableHighlight
 } from 'react-native';
 
 import {
@@ -18,6 +20,8 @@ import {
 import TodoItem from './TodoItem.js';
 
 import HeaderView from './HeaderView.js';
+
+import Ratiobox from './Ratiobox.js';
 
 export default class TodoList extends Component {
 	static propTypes = {
@@ -37,15 +41,22 @@ export default class TodoList extends Component {
 		this.state = {
 			dataSource: this.dataSource.cloneWithRows(this.todoList),
 			isShowDeleteItemModal: false,
-			deleteTargetTodoKey: undefined
+			deleteTargetTodoKey: undefined,
+			isShowModifyView: false,
+			isChosenDeleteMap: {}
 		};
 	}
+
+	componentWillUpdate() {
+   	LayoutAnimation.easeInEaseOut();
+  	}
 
 	componentDidMount () {
 		getAllTodo().then((todoList) => {
 			this.todoList = [...todoList];
 			this.setState({
-				dataSource: this.dataSource.cloneWithRows(this.todoList)
+				dataSource: this.dataSource.cloneWithRows(this.todoList),
+				isChosenDeleteMap: this.updateIsChosenDeleteMap(this.todoList)
 			});
 		});
 	}
@@ -68,6 +79,21 @@ export default class TodoList extends Component {
  		return undefined;
 	}
 
+	updateIsChosenDeleteMap (todoList) {
+		return [...todoList].reduce((mapObj, todo) => {
+			let {key} = todo;
+			let {isChosenDeleteMap} = this.state;
+
+			if (isChosenDeleteMap[key] !== undefined) {
+				mapObj[key] = isChosenDeleteMap[key];
+				return mapObj;
+			} else {
+				mapObj[key] = false;
+				return mapObj;
+			}
+		}, {});
+	}
+
 	showDeleteItemModal (todoKey) {
 		let existTodoKey = this.todoList.some((todo) => {
 			let {key} = todo;
@@ -84,6 +110,31 @@ export default class TodoList extends Component {
 				isShowDeleteItemModal: true,
 				deleteTargetTodoKey: todoKey
 			});
+		}
+	}
+
+	showModifyOperationBar () {
+		if (this.state.isShowModifyView) {
+			return (
+				<View style = {{
+					flexDirection: 'row',
+					height: 100,
+					width: 40,
+					alignSelf: 'stretch',
+					backgroundColor: 'red',
+					position: 'absolute',
+					bottom: 0
+				}}>	
+					<TouchableHighlight style = {{flex: 1}}>
+						<Text>全选</Text>
+					</TouchableHighlight>
+					<TouchableHighlight style = {{flex: 1}}>
+						<Text>删除</Text>
+					</TouchableHighlight>
+				</View>
+			);
+		} else {
+			return null;
 		}
 	}
 
@@ -115,21 +166,55 @@ export default class TodoList extends Component {
 				</Modal>
 				<HeaderView
 					leftText = {'返回'}
-					rightText = {'下一步'}
+					leftOnPress = {() => {
+						this.props.navigator.pop();
+					}}
+					rightText = {this.state.isShowModifyView ? '完成' : '编辑'}
+					rightOnPress = {() => {
+						this.setState({
+							isShowModifyView: !this.state.isShowModifyView
+						});
+					}}
 					titleText = {'hahaha'}
 				/>
 				<ListView
 					dataSource = {this.state.dataSource}
 					renderRow = {todo => {
-						return (
-							<TodoItem 
-								todo = {todo} 
-								onPress = {this.jumpToTodo.bind(this)}
-								onLongPress = {this.showDeleteItemModal.bind(this)}
-							/>
-						);
+						if (this.state.isShowModifyView) {
+							return (
+								<View style = {{
+									flexDirection: 'row'
+								}}> 
+									<View style = {{alignSelf: 'center'}}>
+										<Ratiobox onChange = {() => {
+											let {isChosenDeleteMap} = this.state;
+											isChosenDeleteMap[todo.key] = !isChosenDeleteMap[todo.key];
+											this.setState({
+												isChosenDeleteMap
+											});
+										}} chosen = {this.state.isChosenDeleteMap[todo.key]} />
+									</View>
+									<TodoItem 
+										todo = {todo} 
+										onPress = {this.jumpToTodo.bind(this)}
+										onLongPress = {this.showDeleteItemModal.bind(this)}
+									/>
+								</View>
+							);
+						} else {
+							return (
+								<View>
+									<TodoItem 
+										todo = {todo} 
+										onPress = {this.jumpToTodo.bind(this)}
+										onLongPress = {this.showDeleteItemModal.bind(this)}
+									/>
+								</View>
+							);
+						}
 					}}
 				/>
+				{this.showModifyOperationBar()}
 			</View>
 		);
 	}

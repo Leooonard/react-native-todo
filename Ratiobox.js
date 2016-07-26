@@ -12,21 +12,28 @@ import {
 } from 'react-native';
 
 export default class Ratiobox extends Component {
+	static propTypes = {
+		onChange: PropTypes.func,
+		chosen: PropTypes.bool
+	};
+
+	static defaultProps = {
+		onChange: () => {},
+		chosen: false
+	};
+
 	constructor (props) {
 		super(props);
 
 		this.firstStrokeLength = new Animated.Value(0);
 		this.secondStrokeLength = new Animated.Value(0);
-		this.state = {
-			chosen: false
-		};
 	}
 
-	onClick () {
+	onChange () {
 		const FIRST_STROKE_DURATION = 75;
 		const SECOND_STROKE_DURATION = 150;
 
-		if (this.state.chosen) {
+		if (this.props.chosen) {
 			Animated.sequence([
 				Animated.timing(this.secondStrokeLength, {
 					toValue: 0,
@@ -37,9 +44,6 @@ export default class Ratiobox extends Component {
 					duration: FIRST_STROKE_DURATION
 				})
 			]).start();
-			this.setState({
-				chosen: false
-			});
 		} else {
 			Animated.sequence([
 				Animated.timing(this.firstStrokeLength, {
@@ -51,15 +55,14 @@ export default class Ratiobox extends Component {
 					duration: SECOND_STROKE_DURATION
 				})
 			]).start();
-			this.setState({
-				chosen: true
-			});
 		}
+
+		this.props.onChange();
 	}
 
 	render () {
 		return (
-			<TouchableWithoutFeedback onPress = {this.onClick.bind(this)}>
+			<TouchableWithoutFeedback onPress = {this.onChange.bind(this)}>
 				<View style = {styles.container}>
 					<View
 						style = {{

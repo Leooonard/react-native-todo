@@ -183,7 +183,10 @@ export default class extends Component {
       return (
          <View style = {{flex: 1}}>
             <HeaderView
-               rightText = {'列表'}
+               rightText = {'记录列表'}
+               rightOnPress = {() => {
+                  this.props.navigator.push("todoList", {});
+               }}
                titleText = {'新的记录'}
             />
             <View style={{

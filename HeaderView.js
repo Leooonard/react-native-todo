@@ -60,6 +60,11 @@ export default class HeaderView extends Component {
 	render () {
 		return (
 			<View style = {styles.navigationWrapper}>
+				<View style = {styles.titleWrapper}>
+					<Text style = {styles.titleText}>
+						{this.props.titleText}
+					</Text>
+				</View>
 				{
 					this.renderNavigationButton(this.props.leftText, 
 														this.props.leftOnPress.bind(this))
@@ -68,11 +73,6 @@ export default class HeaderView extends Component {
 					this.renderNavigationButton(this.props.rightText, 
 														this.props.rightOnPress.bind(this))
 				}
-				<View style = {styles.titleWrapper}>
-					<Text style = {styles.titleText}>
-						{this.props.titleText}
-					</Text>
-				</View>
 			</View>
 		);
 	}

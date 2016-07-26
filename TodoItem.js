@@ -28,6 +28,7 @@ export default class TodoItem extends Component {
 	render () {
 		return (
 			<TouchableHighlight 
+				style = {styles.todoWrapper}
 				onPress = {
 					() => {
 						if (typeof this.props.onPress === 'function') {
@@ -43,7 +44,7 @@ export default class TodoItem extends Component {
 					}
 				}
 			>
-				<View style = {styles.todoWrapper}>
+				<View>
 					<View style = {styles.titleWrapper}>
 						<Text style = {styles.todoTitle}>
 			            {this.props.todo.todoObj.input}
@@ -72,7 +73,8 @@ let styles = StyleSheet.create({
       padding: 8,
       margin: 10,
       marginTop: 5,
-      marginBottom: 5
+      marginBottom: 5,
+      flex: 1
 	},
 	titleWrapper: {
 		borderBottomWidth: 1,
